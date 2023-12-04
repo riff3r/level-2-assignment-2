@@ -23,7 +23,36 @@ const getAllUserFromDb = async () => {
   return result;
 };
 
+const getSingleUserFromDb = async (userId: string) => {
+  const result = await User.aggregate([
+    { $match: { userId: Number(userId) } },
+    {
+      $project: {
+        _id: 0,
+        userId: 1,
+        username: 1,
+        fullName: {
+          firstName: '$fullName.firstName',
+          lastName: '$fullName.lastName',
+        },
+        age: 1,
+        email: 1,
+        isActive: 1,
+        hobbies: 1,
+        address: {
+          street: '$address.street',
+          city: '$address.city',
+          country: '$address.country',
+        },
+      },
+    },
+  ]);
+
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDb,
   getAllUserFromDb,
+  getSingleUserFromDb,
 };
