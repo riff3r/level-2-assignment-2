@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { TAddress, TFullName, TOrder, TUser } from './user/user.interface';
+import bcrypt from 'bcrypt';
+import config from '../config';
 
 const fullNameSchema: Schema<TFullName> = new Schema({
   firstName: { type: String, required: true },
@@ -34,9 +36,23 @@ const userSchema: Schema<TUser> = new Schema(
   { versionKey: false },
 );
 
+// pre save middleware / hook :
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round),
+  );
+
+  next();
+});
+
 // userSchema.post('save', function (doc, next) {
-//   delete doc.password;
-//   console.log(doc);
+//   const data = doc.toObject();
+//   delete data.password;
+
 //   next();
 // });
 
