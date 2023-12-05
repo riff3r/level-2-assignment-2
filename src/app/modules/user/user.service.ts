@@ -39,9 +39,15 @@ const updateSingleUserFromDb = async (userId: string, updatedData: object) => {
   return result;
 };
 
+const deleteSingleUserFromDb = async (userId: string) => {
+  const result = await User.updateOne({ userId }, { isActive: false });
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDb,
   getAllUserFromDb,
   getSingleUserFromDb,
   updateSingleUserFromDb,
+  deleteSingleUserFromDb,
 };
