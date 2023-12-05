@@ -24,29 +24,7 @@ const getAllUserFromDb = async () => {
 };
 
 const getSingleUserFromDb = async (userId: string) => {
-  const result = await User.aggregate([
-    { $match: { userId: Number(userId) } },
-    {
-      $project: {
-        _id: 0,
-        userId: 1,
-        username: 1,
-        fullName: {
-          firstName: '$fullName.firstName',
-          lastName: '$fullName.lastName',
-        },
-        age: 1,
-        email: 1,
-        isActive: 1,
-        hobbies: 1,
-        address: {
-          street: '$address.street',
-          city: '$address.city',
-          country: '$address.country',
-        },
-      },
-    },
-  ]);
+  const result = await User.find({ userId }, { _id: 0, password: 0 });
 
   return result;
 };
@@ -54,7 +32,8 @@ const getSingleUserFromDb = async (userId: string) => {
 const updateSingleUserFromDb = async (userId: string, updatedData: object) => {
   const result = await User.findOneAndUpdate(
     { userId: Number(userId) },
-    updatedData,
+    { $set: updatedData },
+    { new: true },
   );
 
   return result;
