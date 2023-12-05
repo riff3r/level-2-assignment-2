@@ -9,6 +9,8 @@ router.get('/', UserControllers.allUsers);
 
 router.get('/:userId', UserControllers.getSingleUser);
 
+router.put('/:userId', UserControllers.updateSingleUser);
+
 // router.get('/', UserControllers.getAllUser);
 
 // router.get('/:userId', UserControllers.getSingleUser);
