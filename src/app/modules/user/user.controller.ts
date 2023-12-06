@@ -11,7 +11,6 @@ const createUser = async (req: Request, res: Response) => {
     const validatedData = UserZodSchema.parse(userData);
 
     const result = await UserServices.createUserIntoDb(validatedData);
-
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
@@ -20,8 +19,11 @@ const createUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
-      error: err,
+      message: err.message || 'Something Else',
+      error: {
+        code: 500,
+        description: err.message || 'Something Else',
+      },
     });
   }
 };
@@ -47,7 +49,7 @@ const allUsers = async (req: Request, res: Response) => {
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const result = await UserServices.getSingleUserFromDb(userId);
+    const result = await UserServices.getSingleUserFromDb(Number(userId));
 
     res.status(200).json({
       success: true,
@@ -57,8 +59,11 @@ const getSingleUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
-      error: err,
+      message: err.message,
+      error: {
+        code: 500,
+        description: err.message,
+      },
     });
   }
 };
@@ -67,7 +72,10 @@ const updateSingleUser = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
     const { userId } = req.params;
-    const result = await UserServices.updateSingleUserFromDb(userId, userData);
+    const result = await UserServices.updateSingleUserFromDb(
+      Number(userId),
+      userData,
+    );
 
     res.status(200).json({
       success: true,
@@ -77,17 +85,20 @@ const updateSingleUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
-      error: err,
+      message: err.message,
+      error: {
+        code: 500,
+        description: err.message,
+      },
     });
   }
 };
 
 const deleteSingleUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  await UserServices.deleteSingleUserFromDb(userId);
-
   try {
+    const { userId } = req.params;
+    const result = await UserServices.deleteSingleUserFromDb(Number(userId));
+
     res.status(200).json({
       success: true,
       message: 'User deleted successfully!',
@@ -96,8 +107,11 @@ const deleteSingleUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
-      error: err,
+      message: err.message,
+      error: {
+        code: 500,
+        description: err,
+      },
     });
   }
 };
@@ -107,7 +121,10 @@ const addProductToOrder = async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const product: TOrder = req.body;
 
-    const result = await UserServices.addProductToOrder(userId, product);
+    const result = await UserServices.addProductToOrder(
+      Number(userId),
+      product,
+    );
 
     if (!result) {
       return res.status(404).json({
@@ -128,8 +145,11 @@ const addProductToOrder = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
-      error: err,
+      message: err.message,
+      error: {
+        code: 500,
+        description: err,
+      },
     });
   }
 };
@@ -138,7 +158,7 @@ const getAllOrders = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
 
-    const user = await UserServices.getAllOrders(userId);
+    const user = await UserServices.getAllOrders(Number(userId));
 
     res.status(200).json({
       success: true,
@@ -147,11 +167,14 @@ const getAllOrders = async (req: Request, res: Response) => {
         orders: user?.orders || [],
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'Internal Server Error',
-      error: err,
+      message: err.message,
+      error: {
+        code: 500,
+        description: err,
+      },
     });
   }
 };
@@ -160,7 +183,7 @@ const calculateTotalPrice = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
 
-    const totalPrice = await UserServices.calculateTotalPrice(userId);
+    const totalPrice = await UserServices.calculateTotalPrice(Number(userId));
 
     res.json({
       success: true,
@@ -169,11 +192,14 @@ const calculateTotalPrice = async (req: Request, res: Response) => {
         totalPrice,
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'Internal Server Error',
-      error: err,
+      message: err.message,
+      error: {
+        code: 500,
+        description: err,
+      },
     });
   }
 };

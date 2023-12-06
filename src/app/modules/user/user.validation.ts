@@ -1,31 +1,31 @@
 import { z } from 'zod';
 
 const fullNameSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+  firstName: z.string({ required_error: 'First name is required' }),
+  lastName: z.string({ required_error: 'Last name is required' }),
 });
 
 const addressSchema = z.object({
-  street: z.string(),
-  city: z.string(),
-  country: z.string(),
+  street: z.string({ required_error: 'Street is required' }),
+  city: z.string({ required_error: 'City is required' }),
+  country: z.string({ required_error: 'Country is required' }),
 });
 
 const orderSchema = z.object({
-  productName: z.string(),
-  price: z.number(),
-  quantity: z.number(),
+  productName: z.string({ required_error: 'Product name is required' }),
+  price: z.number({ required_error: 'Price is required' }),
+  quantity: z.number({ required_error: 'Quantity is required' }),
 });
 
 const userSchema = z.object({
-  userId: z.number(),
-  username: z.string(),
-  password: z.string(),
+  userId: z.number({ required_error: 'User ID is required' }),
+  username: z.string({ required_error: 'Username is required' }),
+  password: z.string({ required_error: 'Password is required' }),
   fullName: fullNameSchema,
-  age: z.number(),
-  email: z.string(),
-  isActive: z.boolean(),
-  hobbies: z.array(z.string()),
+  age: z.number({ required_error: 'Age is required' }),
+  email: z.string({ required_error: 'Email is required' }),
+  isActive: z.boolean({ required_error: 'isActive is required' }),
+  hobbies: z.array(z.string({ required_error: 'Hobbies are required' })),
   address: addressSchema,
   orders: z.array(orderSchema).optional(),
 });

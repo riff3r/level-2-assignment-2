@@ -1,5 +1,11 @@
 import { Schema, model } from 'mongoose';
-import { TAddress, TFullName, TOrder, TUser } from './user/user.interface';
+import {
+  TAddress,
+  TFullName,
+  TOrder,
+  TUser,
+  UserModel,
+} from './user/user.interface';
 import bcrypt from 'bcrypt';
 import config from '../config';
 
@@ -26,7 +32,7 @@ const userSchema: Schema<TUser> = new Schema(
     username: { type: String, required: true, unique: true },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: true,
     },
     fullName: { type: fullNameSchema, required: true },
     age: { type: Number, required: true },
@@ -61,15 +67,12 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.post('save', function (doc, next) {
-  // const data = doc.toObject();
-  // delete data.password;
+userSchema.statics.isUserExists = async function (userId: string) {
+  const existingUser = await User.findOne({ userId });
 
-  doc.password = undefined;
+  return existingUser;
+};
 
-  next();
-});
-
-const User = model<TUser>('User', userSchema);
+const User = model<TUser, UserModel>('User', userSchema);
 
 export default User;
