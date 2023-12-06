@@ -24,7 +24,10 @@ const userSchema: Schema<TUser> = new Schema(
   {
     userId: { type: Number, required: true, unique: true },
     username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+    },
     fullName: { type: fullNameSchema, required: true },
     age: { type: Number, required: true },
     email: { type: String, required: true },
@@ -33,7 +36,16 @@ const userSchema: Schema<TUser> = new Schema(
     address: { type: addressSchema, required: true },
     orders: { type: [orderSchema], default: undefined },
   },
-  { versionKey: false },
+  {
+    versionKey: false,
+
+    toJSON: {
+      transform: function (doc, ret) {
+        // Exclude the password field when converting to JSON
+        delete ret.password;
+      },
+    },
+  },
 );
 
 // pre save middleware / hook :
@@ -49,12 +61,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// userSchema.post('save', function (doc, next) {
-//   const data = doc.toObject();
-//   delete data.password;
+userSchema.post('save', function (doc, next) {
+  // const data = doc.toObject();
+  // delete data.password;
 
-//   next();
-// });
+  doc.password = undefined;
+
+  next();
+});
 
 const User = model<TUser>('User', userSchema);
 

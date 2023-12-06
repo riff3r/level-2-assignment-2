@@ -1,5 +1,5 @@
 import User from '../user.model';
-import { TUser } from './user.interface';
+import { TOrder, TUser } from './user.interface';
 
 const createUserIntoDb = async (userData: TUser) => {
   const result = await User.create(userData);
@@ -24,7 +24,7 @@ const getAllUserFromDb = async () => {
 };
 
 const getSingleUserFromDb = async (userId: string) => {
-  const result = await User.find({ userId }, { _id: 0, password: 0 });
+  const result = await User.findOne({ userId }, { _id: 0, password: 0 });
 
   return result;
 };
@@ -44,10 +44,36 @@ const deleteSingleUserFromDb = async (userId: string) => {
   return result;
 };
 
+const addProductToOrder = async (userId: string, order: TOrder) => {
+  const result = await User.findOneAndUpdate(
+    { userId },
+    { $push: { orders: order } },
+    { new: true },
+  );
+
+  return result;
+};
+
+const getAllOrders = async (userId: string) => {
+  const result = await User.findOne({ userId });
+  return result || null;
+};
+
+const calculateTotalPrice = async (userId: string) => {
+  const user = await User.findOne({ userId });
+  return user?.orders
+    ? user.orders.reduce((acc, order) => acc + order.price * order.quantity, 0)
+    : 0;
+};
+
 export const UserServices = {
   createUserIntoDb,
   getAllUserFromDb,
   getSingleUserFromDb,
   updateSingleUserFromDb,
   deleteSingleUserFromDb,
+
+  addProductToOrder,
+  getAllOrders,
+  calculateTotalPrice,
 };
